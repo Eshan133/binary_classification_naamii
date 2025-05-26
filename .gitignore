@@ -128,11 +128,14 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.task2
 .env
 .venv
+task2/
 env/
 venv/
 ENV/
+task.bak/
 env.bak/
 venv.bak/
 
