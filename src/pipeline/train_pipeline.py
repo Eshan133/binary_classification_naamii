@@ -2,6 +2,7 @@ import pandas as pd
 import warnings
 import sys
 import os
+import pickle  # Added for saving selected features
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
@@ -14,7 +15,7 @@ from src.components.scale_features import scale_features
 from src.components.select_features import select_features
 from src.components.train_and_evaluate_model import train_and_evaluate_model
 from src.components.perform_cross_validation import perform_cross_validation
-from src.components.create_evaluation_report import create_evaluation_report  # New import
+from src.components.create_evaluation_report import create_evaluation_report
 from src.exception import CustomException
 from src.logger import logging
 
@@ -43,7 +44,13 @@ def main():
         X_train_scaled, X_test_scaled = scale_features(X_train, X_test)
 
         # Select features
-        X_train_selected, X_test_selected = select_features(X_train_scaled, y_train, X_test_scaled, n_features=150)
+        X_train_selected, X_test_selected, selected_features = select_features(X_train_scaled, y_train, X_test_scaled, n_features=150)
+
+        # Save selected features
+        features_filename = 'artifacts/selected_features.pkl'
+        with open(features_filename, 'wb') as f:
+            pickle.dump(selected_features, f)
+        print(f"Selected features saved to '{features_filename}'")
 
         print('Preprocessing Completed')
         
@@ -60,10 +67,10 @@ def main():
             'Logistic Regression': {'C': [0.5, 1, 2, 5, 10], 'solver': ['liblinear', 'lbfgs']}
         }
 
-        print('Training and evaluating models')
+        print('Train and evaluate models')
         # Train and evaluate models
         best_models = {}
-        metrics_dict = {}  # Store all metrics for each model
+        metrics_dict = {}
         for name in models:
             best_model, metrics = train_and_evaluate_model(
                 models[name], param_grids[name], X_train_selected, y_train, X_test_selected, y_test, name
@@ -74,11 +81,11 @@ def main():
         # Select the best model based on F1-macro
         best_model_name = max(metrics_dict, key=lambda name: metrics_dict[name]['f1_macro'])
 
-        # Create evaluation report using the new module
+        # Create evaluation report
         report_filename = 'artifacts/evaluation_report.txt'
         create_evaluation_report(metrics_dict, best_model_name, report_filename)
 
-        # Select and save the best model
+        # Save the best model
         best_model = best_models[best_model_name]
         print(f"\nBest Model: {best_model_name} with Macro Avg F1-score: {metrics_dict[best_model_name]['f1_macro']:.3f}")
         model_filename = f'artifacts/{best_model_name.lower().replace(" ", "_")}_model.pkl'

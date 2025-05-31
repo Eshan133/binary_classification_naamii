@@ -3,9 +3,9 @@ import warnings
 import sys
 import os
 import joblib
+import pickle  # Added for loading selected features
 from src.components.load_data import load_data
 from src.components.preprocess_data import preprocess_data
-from src.components.prepare_features_and_target import prepare_features_and_target
 from src.components.prepare_features import prepare_features
 from src.components.drop_near_constant_features import drop_near_constant_features
 from src.components.scale_features import scale_features
@@ -19,17 +19,18 @@ warnings.filterwarnings('ignore')
 def main():
     try:
         print('----PREDICTION HAS STARTED----')
-        print('--Loading datasets')
-        # Load data 
+        print('Loading datasets')
+        # Load data (train_df for bounds, unseen_df for prediction)
         train_df, unseen_df = load_data('artifacts/train_set.csv', unseen_path='artifacts/blinded_test_set.csv')
+        
 
-        print('--Preprocessing')
+        print('Preprocessing')
         # Preprocess data
         train_df = preprocess_data(train_df, is_train=True)
         unseen_df = preprocess_data(unseen_df, is_train=False, train_df=train_df)
 
         # Prepare features
-        X_train, y_train = prepare_features_and_target(train_df)
+        X_train = prepare_features(train_df)
         X_unseen = prepare_features(unseen_df)
 
         # Drop near-constant features using training data as reference
@@ -38,9 +39,14 @@ def main():
         # Scale features
         X_train_scaled, X_unseen_scaled = scale_features(X_train, X_unseen)
 
-        # Select features (use the same number of features as training, 150)
-        X_train_selected, X_unseen_selected = select_features(X_train_scaled, y_train, X_other_scaled=X_unseen_scaled, n_features=150)
-        print('--Preprocessing Completed')
+        # Load the saved selected features
+        features_filename = 'artifacts/selected_features.pkl'
+        with open(features_filename, 'rb') as f:
+            selected_features = pickle.load(f)
+        print(f"Loaded selected features from '{features_filename}'")
+
+        # Select features using the saved feature list
+        X_train_selected, X_unseen_selected, _ = select_features(X_train_scaled, y_train=None, X_other_scaled=X_unseen_scaled, n_features=150, selected_features=selected_features)
 
         # Load the saved best model
         model_filename = os.path.join('artifacts', [f for f in os.listdir('artifacts') if f.endswith('_model.pkl')][0])
@@ -48,10 +54,8 @@ def main():
         print(f"Loaded model from '{model_filename}'")
 
         # Predict on unseen data
-        print('--Prediction in action')
         predictions_df = predict_unseen(best_model, X_unseen_selected, unseen_df)
 
-        print('Saving predictions')
         # Save predictions
         output_filename = 'artifacts/unseen_predictions.csv'
         os.makedirs(os.path.dirname(output_filename), exist_ok=True)
@@ -60,6 +64,9 @@ def main():
         print("Predictions for Unseen Dataset:")
         print(predictions_df)
 
+    except CustomException as ce:
+        logging.error(f"CustomException occurred: {ce}")
+        raise
     except Exception as e:
         logging.error("Unexpected error occurred")
         raise CustomException(e, sys)
