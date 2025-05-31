@@ -1,0 +1,28 @@
+High correlations (|r| > 0.7):
+  - Feature_1 and Feature_2: 1.00
+  - Feature_1 and Feature_3: 0.88
+  - Feature_2 and Feature_3: 0.88
+  - Feature_5 and Feature_6: 0.98
+  - Feature_5 and Feature_7: -0.97
+  - Feature_5 and Feature_8: 1.00
+  - Feature_5 and Feature_9: -0.97
+  - Feature_6 and Feature_7: -0.90
+  - Feature_6 and Feature_8: 0.97
+  - Feature_6 and Feature_9: -0.90
+  - Feature_7 and Feature_8: -0.98
+  - Feature_7 and Feature_9: 1.00
+  - Feature_8 and Feature_9: -0.98
+  - Feature_2030 and Feature_2032: 0.82
+Feature Feature_1 has 7 outliers.
+Feature Feature_2 has 7 outliers.
+Feature Feature_3 has 1 outliers.
+Feature Feature_4 has 9 outliers.
+Feature Feature_5 has 24 outliers.
+Feature Feature_6 has 30 outliers.
+Feature Feature_7 has 5 outliers.
+Feature Feature_8 has 19 outliers.
+Feature Feature_9 has 5 outliers.
+Feature Feature_10 has 31 outliers.
+Feature Feature_2031 has 6 outliers.
+Feature Feature_2032 has 1 outliers.
+High variance features: Feature_2032

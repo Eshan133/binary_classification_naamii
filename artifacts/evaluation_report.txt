@@ -1,0 +1,17 @@
+Model Evaluation Report
+======================
+
+Model Name          | Accuracy | Precision (Macro) | Recall (Macro) | F1 (Macro) | F1 (Weighted) | ROC-AUC
+--------------------|----------|------------------|---------------|------------|---------------|---------
+Random Forest        | 0.670   | 0.666           | 0.640        | 0.640     | 0.656      | 0.6841133004926109
+XGBoost              | 0.610   | 0.593           | 0.572        | 0.562     | 0.585      | 0.6572249589490968
+Logistic Regression  | 0.620   | 0.607           | 0.603        | 0.604     | 0.617      | 0.6313628899835796
+
+Best Model (based on F1-Macro):
+  Name: Random Forest
+  Accuracy: 0.670
+  Precision (Macro): 0.666
+  Recall (Macro): 0.640
+  F1-Score (Macro): 0.640
+  F1-Score (Weighted): 0.656
+  ROC-AUC: 0.6841133004926109
