@@ -167,3 +167,6 @@ python src/pipeline/prediction_pipeline.py
 ## Acknowledgments
 
 This project was developed with assistance from Grok, created by xAI, for debugging, code optimization, and documentation. Thanks Grok
+
+
+#### Outputs are inside the artifacts folder
